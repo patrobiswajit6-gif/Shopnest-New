@@ -1,0 +1,51 @@
+.home-hero {
+  background: linear-gradient(120deg, var(--navy) 0%, var(--navy-deep) 100%);
+  border-radius: var(--radius-lg);
+  padding: 44px 36px;
+  color: #fff;
+  margin-bottom: 36px;
+}
+
+.home-hero h1 {
+  color: #fff;
+  font-size: 34px;
+  max-width: 520px;
+}
+
+.home-hero p {
+  color: #cdd6e8;
+  max-width: 460px;
+  margin: 0;
+  font-size: 15px;
+}
+
+.home-hero .eyebrow {
+  color: var(--marigold);
+}
+
+.home-section {
+  margin-bottom: 40px;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 18px;
+}
+
+.home-more-categories {
+  margin-top: 18px;
+}
+
+.home-more-categories summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--marigold-deep);
+  font-size: 13.5px;
+}

@@ -1,0 +1,106 @@
+.settings-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.settings-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 4px;
+  margin-right: 20px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+}
+
+.settings-tabs button.active {
+  color: var(--navy-deep);
+  border-bottom-color: var(--marigold-deep);
+}
+
+.settings-profile {
+  padding: 22px 24px;
+}
+
+.settings-profile-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.settings-profile-row:last-child {
+  border-bottom: none;
+}
+
+.settings-orders {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-order {
+  padding: 18px 20px;
+}
+
+.settings-order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.settings-order-header div {
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-order-header span {
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.settings-order-items {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.settings-order-items img {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: #f3f0e8;
+}
+
+.settings-order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-order-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.settings-order-refund {
+  margin-top: 10px;
+}
+
+.settings-refund-form {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+
+.settings-refund-actions {
+  display: flex;
+  gap: 10px;
+}
