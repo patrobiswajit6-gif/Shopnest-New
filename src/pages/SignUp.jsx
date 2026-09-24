@@ -11,6 +11,7 @@ export default function SignUp() {
   const [form, setForm] = useState(initialForm)
   const [errors, setErrors] = useState({})
   const [formError, setFormError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const updateField = (field) => (event) => {
     setForm((prev) => ({ ...prev, [field]: event.target.value }))
@@ -28,15 +29,18 @@ export default function SignUp() {
     return Object.keys(nextErrors).length === 0
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setFormError('')
     if (!validate()) return
+    setLoading(true)
     try {
-      signUp(form)
+      await signUp(form)
       navigate('/', { replace: true })
     } catch (err) {
       setFormError(err.message)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -87,8 +91,8 @@ export default function SignUp() {
             />
             {errors.confirmPassword && <span className="field-error">{errors.confirmPassword}</span>}
           </div>
-          <button type="submit" className="btn btn-primary btn-block">
-            Create Account
+          <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+            {loading ? 'Creating account…' : 'Create Account'}
           </button>
         </form>
 

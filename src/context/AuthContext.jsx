@@ -1,78 +1,61 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { readStore, writeStore } from '../utils/storage.js'
+import { registerUser, loginUser, getMe } from '../api/authApi.js'
 
+const TOKEN_KEY = 'shopnest:token'
 const AuthContext = createContext(null)
 
-function loadUsers() {
-  return readStore('users', [])
-}
-
-function persistUsers(users) {
-  writeStore('users', users)
-}
-
 export function AuthProvider({ children }) {
-  const [currentUser, setCurrentUser] = useState(() => readStore('session', null))
+  const [currentUser, setCurrentUser] = useState(null)
+  const [loading, setLoading] = useState(true) // wait for session restore
 
+  // ── On mount: restore session from stored JWT ───────────────────────────────
   useEffect(() => {
-    writeStore('session', currentUser)
-  }, [currentUser])
+    const token = localStorage.getItem(TOKEN_KEY)
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    getMe(token)
+      .then(({ user }) => setCurrentUser(user))
+      .catch(() => {
+        // Token invalid/expired — clear it
+        localStorage.removeItem(TOKEN_KEY)
+      })
+      .finally(() => setLoading(false))
+  }, [])
 
-  const signUp = ({ name, email, phone, password }) => {
-    const users = loadUsers()
-    const emailNormalized = email.trim().toLowerCase()
-    const exists = users.some((user) => user.email === emailNormalized)
-    if (exists) {
-      throw new Error('An account with this email already exists.')
-    }
-    const newUser = {
-      id: `user_${Date.now()}`,
-      name: name.trim(),
-      email: emailNormalized,
-      phone: phone.trim(),
-      password,
-      addresses: [],
-      createdAt: new Date().toISOString()
-    }
-    persistUsers([...users, newUser])
-    const { password: _omit, ...safeUser } = newUser
-    setCurrentUser(safeUser)
-    return safeUser
+  // ── Sign up ─────────────────────────────────────────────────────────────────
+  const signUp = async ({ name, email, phone, password }) => {
+    const { token, user } = await registerUser({ name, email, phone, password })
+    localStorage.setItem(TOKEN_KEY, token)
+    setCurrentUser(user)
+    return user
   }
 
-  const signIn = ({ email, password }) => {
-    const users = loadUsers()
-    const emailNormalized = email.trim().toLowerCase()
-    const match = users.find((user) => user.email === emailNormalized && user.password === password)
-    if (!match) {
-      throw new Error('Invalid email or password.')
-    }
-    const { password: _omit, ...safeUser } = match
-    setCurrentUser(safeUser)
-    return safeUser
+  // ── Sign in ─────────────────────────────────────────────────────────────────
+  const signIn = async ({ email, password }) => {
+    const { token, user } = await loginUser({ email, password })
+    localStorage.setItem(TOKEN_KEY, token)
+    setCurrentUser(user)
+    return user
   }
 
+  // ── Sign out ────────────────────────────────────────────────────────────────
   const signOut = () => {
+    localStorage.removeItem(TOKEN_KEY)
     setCurrentUser(null)
   }
 
-  const saveAddress = (address) => {
-    if (!currentUser) return
-    const users = loadUsers()
-    const updatedUsers = users.map((user) => {
-      if (user.id !== currentUser.id) return user
-      const addresses = [...(user.addresses || []), { id: `addr_${Date.now()}`, ...address }]
-      return { ...user, addresses }
-    })
-    persistUsers(updatedUsers)
-    const updatedUser = updatedUsers.find((user) => user.id === currentUser.id)
-    const { password: _omit, ...safeUser } = updatedUser
-    setCurrentUser(safeUser)
-  }
-
   const value = useMemo(
-    () => ({ currentUser, signUp, signIn, signOut, saveAddress, isAuthenticated: Boolean(currentUser) }),
-    [currentUser]
+    () => ({
+      currentUser,
+      loading,
+      signUp,
+      signIn,
+      signOut,
+      isAuthenticated: Boolean(currentUser)
+    }),
+    [currentUser, loading]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
